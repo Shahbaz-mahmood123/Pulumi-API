@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pulumi-api
+  name: pulumi-api
+spec:
+  containers:
+  - image: shahbazmahmood123/$NEEDSIMAGE
+    ports:
+    - containerPort: 8000
+    name: pulumi-api
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: pulumi-api
+  name: pulumi-api
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  type: NodePort
+  selector:
+    run: pulumi-api
+status:
+  loadBalancer: {}

@@ -1,0 +1,7 @@
+Flask==2.1.2
+gunicorn==21.2.0
+uvicorn==0.25.0
+SQLAlchemy==2.0.25
+pydantic==2.5.3
+pydantic_core==2.14.6
+fastapi==0.109.0
