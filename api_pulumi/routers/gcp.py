@@ -13,21 +13,21 @@ select_gcp_type = SelectGCP()
 router = APIRouter(prefix="/gcp")
 
 @router.get("/compute/minimal/preview")
-def read_root():
+def preview():
     preview = select_gcp_type.preview_compute_engine_instance()
     return preview
 
 @router.get("/compute/minimal/up")
-def read_root():
-    up = select_gcp_type.preview_compute_engine_instance()
+def up():
+    up = select_gcp_type.up_compute_engine_instance()
     return up
 
 @router.get("/compute/minimal/destroy")
-def read_root():
-    destroy = select_gcp_type.preview_compute_engine_instance()
+def destroy():
+    destroy = select_gcp_type.destroy_compute_engine_instance()
     return destroy
 
 @router.get("/compute/minimal/destroy_stack")
-def read_root():
-    destroy_stack = select_gcp_type.preview_compute_engine_instance()
+def destroy_stack():
+    destroy_stack = select_gcp_type.destroy_stack_compute_engine_instance
     return destroy_stack

@@ -12,7 +12,6 @@ class SelectGCP():
 
     def preview_compute_engine_instance(self):
         
-        
         config = PulumiGCPConfig(f"/code/api_pulumi/minimal-gcp-compute.yaml")
 
         project_id = config.project_id
@@ -40,4 +39,12 @@ class SelectGCP():
 
         pulumi_execution.preview()
     
+    def up_compute_engine_instance(self):
+        pass
+    
+    def destroy_compute_engine_instance(self):
+        pass
+    
+    def destroy_stack_compute_engine_instance(self):
+        pass
 
