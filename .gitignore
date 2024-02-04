@@ -4,7 +4,7 @@ docker-compose.yml
 groundswell.env
 tower.env
 tower.yml
-
+gcp-key.json
 random-files/
 
 # Byte-compiled / optimized / DLL files

@@ -4,12 +4,12 @@ from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from .routers import gcp
+from .routers.gcp import gcp_router
 
 app = FastAPI()
 
 #add additional routes here
-app.include_router(gcp.router)
+app.include_router(gcp_router)
 
 @app.get("/")
 def read_root():
