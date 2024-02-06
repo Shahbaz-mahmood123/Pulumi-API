@@ -9,7 +9,7 @@ COPY ./requirements.txt /code/requirements.txt
 
 COPY gcp-key.json /code/gcp-key.json
 
-COPY docker-compose.yaml /code/docker-compose.yaml
+COPY docker-compose.yml /code/docker-compose.yml
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt

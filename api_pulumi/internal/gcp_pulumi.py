@@ -18,35 +18,27 @@ class SelectGCP():
                                         tower_yaml_secret=self.config.tower_yaml_secret, harbor_creds=self.config.harbor_creds,
                                         groundswell_secret=self.config.groundswell_secret, source_ranges=self.config.source_ranges, 
                                         tags=self.config.tags, source_tags=self.config.source_tags)
-
-    #TODO: DRY DRY DRY 
-    def preview_compute_engine_instance(self):
+        ##TODO: use cloud provider bucket
+        self.current_dir = os.getcwd()
         
-        current_work_dir = os.getcwd()
+        self.pulumi_execution = PulumiExecution(self.config.project_id, self.config.stack_name,self.current_dir, self.pulumi_gcp)
+            
+    def preview_compute_engine_instance(self) -> str:
         
-        pulumi_execution = PulumiExecution(self.config.project_id, self.config.stack_name,current_work_dir, self.pulumi_gcp)
-
-        pulumi_execution.preview()
+       preview = self.pulumi_execution.preview()
+       return preview
     
     def up_compute_engine_instance(self):
-        current_work_dir = os.getcwd()
-        
-        pulumi_execution = PulumiExecution(self.config.project_id, self.config.stack_name,current_work_dir, self.pulumi_gcp)
-
-        pulumi_execution.execute()
+        self.pulumi_execution.execute()
     
     def destroy_compute_engine_instance(self):
-        
-        current_work_dir = os.getcwd()
-        
-        pulumi_execution = PulumiExecution(self.config.project_id, self.config.stack_name,current_work_dir, self.pulumi_gcp)
-
-        pulumi_execution.destroy()
+    
+        self.pulumi_execution.destroy()
     
     def destroy_stack_compute_engine_instance(self):
-        pass
+        self.pulumi_execution.destroy_stack()
     
     def refresh_stack_compute_engine_instance(self):
-        pass
+        self.pulumi_execution.refresh()
 
 
