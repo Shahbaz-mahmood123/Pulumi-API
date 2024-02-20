@@ -14,7 +14,7 @@ gcp_router = APIRouter(prefix="/gcp")
 @gcp_router.get("/compute/minimal/preview")
 def preview():
     preview = select_gcp_type.preview_compute_engine_instance()
-    return preview
+    return {"preview": preview}
 
 @gcp_router.get("/compute/minimal/up")
 def up():
