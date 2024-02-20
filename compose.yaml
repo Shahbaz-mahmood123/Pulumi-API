@@ -5,11 +5,11 @@ services:
       context: .
     ports:
       - 8000:8000
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: pulumi-api
-      POSTGRES_PASSWORD: pulumi-api
-      POSTGRES_DB: pulumi-api
+  # db:
+  #   image: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: pulumi-api
+  #     POSTGRES_PASSWORD: pulumi-api
+  #     POSTGRES_DB: pulumi-api
 
