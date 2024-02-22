@@ -19,14 +19,14 @@ def preview():
 @gcp_router.get("/compute/minimal/up")
 def up():
     up = select_gcp_type.up_compute_engine_instance()
-    return up
+    return {"up": up}
 
 @gcp_router.get("/compute/minimal/destroy")
 def destroy():
     destroy = select_gcp_type.destroy_compute_engine_instance()
-    return destroy
+    return {"destroy": destroy}
 
 @gcp_router.get("/compute/minimal/destroy_stack")
 def destroy_stack():
-    destroy_stack = select_gcp_type.destroy_stack_compute_engine_instance
-    return destroy_stack
+    destroy_stack = select_gcp_type.destroy_stack_compute_engine_instance()
+    return {"destroy_stack": destroy_stack}
