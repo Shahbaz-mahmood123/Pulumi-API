@@ -17,7 +17,8 @@ help:
 
 .PHONY: run
 run:
-	docker-compose -f $(COMPOSE_FILE) up -d
+	uvicorn api_pulumi.app:app --host 0.0.0.0 --port 8000 --reload
+	# docker-compose -f $(COMPOSE_FILE) up -d
 
 .PHONY: down
 down:

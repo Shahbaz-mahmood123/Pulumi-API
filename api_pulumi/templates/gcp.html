@@ -1,0 +1,23 @@
+
+<div class="flex flex-col w-full lg:flex-row">
+    <div class="grid flex-col h-60 card bg-base-300 rounded-box place-items-left">
+        
+        <button class="btn btn-primary btn-sm" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/preview" hx-target="#message-container">Pulumi preview</button>
+        <button class="btn btn-primary btn-sm" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/up" hx-target="#message-container">Pulumi up</button>
+        <button class="btn btn-primary btn-sm" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/destroy" hx-target="#message-container">Pulumi destroy</button>
+        <button class="btn btn-primary btn-sm" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/destroy_stack" hx-target="#message-container">Pulumi destroy_stack</button>
+
+    </div> 
+    <div class="divider lg:divider-horizontal"></div> 
+    <div class="grid flex-grow h-80 card bg-base-300 rounded-box place-items-center">
+        <div id="message-container"></div>
+        <dialog id="my_modal" class="modal">
+            <div class="modal-box">
+              <span class="loading loading-ring loading-lg"></span>
+            </div>
+          </dialog>
+    </div>
+</div>
+
+
+

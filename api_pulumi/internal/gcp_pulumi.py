@@ -3,33 +3,36 @@ from typing import Any
 
 from infrastructure.pulumi import PulumiExecution
 from infrastructure.minimal_gcp_compute_engine import MinimalPulumiGCP
-from infrastructure.pulumi_config import MinimalPulumiGCPConfig
+from infrastructure.pulumi_config import MinimalPulumiGCPConfig, MinimalPulumiGCPConfigYAML
+from infrastructure.models.pulumi import PreviewResult
 
 class SelectGCP():
     
     def __init__(self) -> None:
         
         # This is the dir in the container where the yaml file lives. Need to figure out if i use DB or yaml files
-        self.config = MinimalPulumiGCPConfig(f"/code/api_pulumi/minimal-gcp-compute.yaml")
+        self.yaml = MinimalPulumiGCPConfigYAML(file_path=f"./api_pulumi/minimal-gcp-compute.yaml")
+        #self.config = MinimalPulumiGCP(config=yaml.config_model)
         
-        if self.config.type == 'minimal':
-            self.pulumi_gcp = MinimalPulumiGCP(project_id=self.config.project_id, location=self.config.location, name=self.config.resource_name, region=self.config.region,
-                                        zone=self.config.zone, instance_name=self.config.instance_name,tower_env_secret=self.config.tower_env_secret, 
-                                        tower_yaml_secret=self.config.tower_yaml_secret, harbor_creds=self.config.harbor_creds,
-                                        groundswell_secret=self.config.groundswell_secret, source_ranges=self.config.source_ranges, 
-                                        tags=self.config.tags, source_tags=self.config.source_tags)
+        if self.yaml.config_model.stack.type == 'minimal': 
+            self.pulumi_gcp = MinimalPulumiGCP(config=self.yaml.config_model)
+        if self.yaml.config_model.stack.type  == 'standard':
+            pass 
+        if self.yaml.config_model.stack.type  == 'private':
+            pass 
+        
         ##TODO: use cloud provider bucket
         self.current_dir = os.getcwd()
         
-        self.pulumi_execution = PulumiExecution(self.config.project_id, self.config.stack_name,self.current_dir, self.pulumi_gcp)
+        self.pulumi_execution = PulumiExecution(self.yaml.config_model.project_id, self.yaml.config_model.stack.stack ,self.current_dir, self.pulumi_gcp)
             
-    def preview_compute_engine_instance(self) -> str:
+    def preview_compute_engine_instance(self) -> PreviewResult:
         
        preview = self.pulumi_execution.preview()
        return preview
     
     def up_compute_engine_instance(self):
-        self.pulumi_execution.execute()
+        up_result = self.pulumi_execution.execute()
     
     def destroy_compute_engine_instance(self):
     
