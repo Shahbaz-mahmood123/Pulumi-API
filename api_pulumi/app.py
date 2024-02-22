@@ -24,7 +24,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @app.get("/")
 def read_root():
     dummy_request = Request(scope={"type": "http"})
-    return templates.TemplateResponse("index.html", context={"test": "test", "request": dummy_request})
+    return templates.TemplateResponse("base.html", context={"test": "test", "request": dummy_request})
+
+@app.get("/gcp")
+def gcp():
+    dummy_request = Request(scope={"type": "http"})
+    return templates.TemplateResponse("gcp.html", context={"test": "test", "request": dummy_request})
 
 @app.get("/auth")
 def auth(token: Annotated[str, Depends(oauth2_scheme)]):
