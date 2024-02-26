@@ -1,5 +1,6 @@
 import os
 from typing import Union
+import json
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -9,27 +10,35 @@ from ..internal.gcp_pulumi import SelectGCP
 
 select_gcp_type = SelectGCP()
 
-gcp_router = APIRouter(prefix="/gcp")
+router = APIRouter(prefix="/gcp")
 
-def parse_preview_output():
+def format_preview_output():
     pass 
 
-@gcp_router.get("/compute/minimal/preview")
+@router.get("/compute/minimal/preview")
 def preview():
-    preview = select_gcp_type.preview_compute_engine_instance()
-    return {"preview": preview.change_summary}
+    output = select_gcp_type.preview_compute_engine_instance()
 
-@gcp_router.get("/compute/minimal/up")
+    return {"preview": output}
+
+@router.get("/compute/minimal/up")
 def up():
     up = select_gcp_type.up_compute_engine_instance()
     return {"up": up}
 
-@gcp_router.get("/compute/minimal/destroy")
+@router.get("/compute/minimal/destroy")
 def destroy():
     destroy = select_gcp_type.destroy_compute_engine_instance()
     return {"destroy": destroy}
 
-@gcp_router.get("/compute/minimal/destroy_stack")
+@router.get("/compute/minimal/destroy_stack")
 def destroy_stack():
     destroy_stack = select_gcp_type.destroy_stack_compute_engine_instance()
     return {"destroy_stack": destroy_stack}
+
+@router.get("/compute/minimal/refresh")
+def refresh():
+    refresh = select_gcp_type.refresh_stack_compute_engine_instance()
+    if refresh is None:
+        return 0
+    return refresh
