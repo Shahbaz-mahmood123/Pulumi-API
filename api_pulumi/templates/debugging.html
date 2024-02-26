@@ -1,0 +1,54 @@
+<div class="flex w-full">
+    <form action="/aws/job-queue" hx-post>
+    <input type="text" placeholder="AWS Batch compute enviorment id" class="input input-bordered w-full max-w-xs" id="environment-id" />
+    <button type="submit" class="btn btn-primary" id="compute-env-selection">Submit</button>
+    </form>
+    <div class="divider divider-horizontal"></div>
+    <div class="stats bg-primary text-primary-content">
+        <div class="stat">
+            <div class="stat-title">Job Queue</div>
+            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-trigger="every 5s">Unkown</div>
+        </div>
+
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="stats bg-primary text-primary-content">
+        <div class="stat">
+            <div class="stat-title" >Compute Enviornment</div>
+            <div class="stat-value" id="compute-env-status" hx-get="/aws/compute-env" hx-trigger="every 5s">Unkown</div>
+        </div>
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="stats bg-primary text-primary-content">
+        <div class="stat">
+            <div class="stat-title">ECS Cluster</div>
+            <div class="stat-value">Unkown</div>
+        </div>
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="stats bg-primary text-primary-content">
+        <div class="stat">
+            <div class="stat-title">Auto scaling Group</div>
+            <div class="stat-value">Unkown</div>
+        </div>
+    </div>
+
+</div>
+<div class="divider divider-vertical"></div>
+<div class="join">
+    <div class="stats bg-ghost text-primary-content">
+        <div class="stat">
+            <div class="stat-title">Submitted</div>
+            <div class="stat-value" id="job-queue-status">Unkown</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Running</div>
+            <div class="stat-value">Unkown</div>
+        </div>
+        <div class="stat">
+            <div class="stat-title">Failed</div>
+            <div class="stat-value">Unkown</div>
+        </div>
+    </div>
+</div>
