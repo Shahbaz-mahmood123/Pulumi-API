@@ -3,7 +3,8 @@ from typing import Annotated, Union
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from starlette.requests import Request
@@ -11,12 +12,14 @@ from sqlalchemy.orm import Session
 
 from .db import models, schema, pulumi
 from .db.database import engine, SessionLocal
-from .routers.gcp import gcp_router
+from .routers import aws, gcp, compute_env
 
 app = FastAPI()
 
 #add additional routes here
-app.include_router(gcp_router)
+app.include_router(gcp.router)
+app.include_router(compute_env.router)
+app.include_router(aws.router)
 
 templates = Jinja2Templates(directory="api_pulumi/templates")
 
@@ -34,15 +37,25 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
-def read_root():
-    dummy_request = Request(scope={"type": "http"})
-    return templates.TemplateResponse("base.html", context={"test": "test", "request": dummy_request})
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("base.html", context)
 
 @app.get("/gcp")
 def gcp():
     dummy_request = Request(scope={"type": "http"})
     return templates.TemplateResponse("gcp.html", context={"test": "test", "request": dummy_request})
+
+@app.get("/gke")
+def gcp():
+    dummy_request = Request(scope={"type": "http"})
+    return templates.TemplateResponse("gke.html", context={"test": "test", "request": dummy_request})
+
+@app.get("/debug")
+def debug():
+    dummy_request = Request(scope={"type": "http"})
+    return templates.TemplateResponse("debugging.html", context={"test": "test", "request": dummy_request})
 
 @app.get("/auth")
 def auth(token: Annotated[str, Depends(oauth2_scheme)]):
