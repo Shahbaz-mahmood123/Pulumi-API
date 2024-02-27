@@ -2,9 +2,11 @@ import os
 from typing import Union
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from fastapi.responses import HTMLResponse
 from core.debug_aws_batch import DebugAWSBatch
 
 from ..db import compute_env
@@ -17,7 +19,7 @@ debug_aws = DebugAWSBatch()
 id ="ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work" 
 
 
-@router.get("/job-queue")
+@router.get("/job-queue",  response_class=PlainTextResponse)
 async def get_job_queue_status() -> str:
     job_queue = debug_aws.get_job_queue_status(id)
     if not job_queue:
@@ -25,13 +27,13 @@ async def get_job_queue_status() -> str:
     status = job_queue.get("jobQueueState", "")
     return status
 
-@router.get("/compute-env")
+@router.get("/compute-env", response_class=PlainTextResponse)
 async def get_compute_enviornment_status() -> str:
     compute_env = debug_aws.get_compute_env_status(id)
     status = compute_env.get("computeEnviornmentState", "")
     return status
     
-@router.get("/ecs")
+@router.get("/ecs",  response_class=PlainTextResponse)
 async def get_ecs_cluster_status() :
     ecs_cluster = debug_aws.get_ecs_cluster(id)
     print(ecs_cluster)
@@ -46,34 +48,54 @@ async def get_ecs_cluster_status() :
 
 @router.get("/job-queue/running")
 async def get_running_jobs():
-    pass
+    running_jobs = debug_aws.get_running_jobs(id)
+    print(running_jobs)
+    return running_jobs
 
 @router.get("/job-queue/submitted")
-async def get_running_jobs():
+async def get_submitted_jobs():
     pass
 
 @router.get("/job-queue/failed")
-async def get_running_jobs():
+async def get_failed_jobs():
     pass
 
-@router.get("/job-queue/failed")
-async def get_running_jobs():
-    pass
+@router.get("/job-queue/runnable")
+async def get_runnable_jobs():
+    jobs = debug_aws.get_runnable_jobs(id)
+    return jobs
 
-@router.get("/job-queue/completed")
-async def get_running_jobs():
-    pass
+@router.get("/job-queue/succeeded")
+async def get_succeeded_jobs():
+    jobs = debug_aws.get_succeeded_jobs(id)
+    return jobs
 
 @router.get("/autoscaling-group")
 async def get_autoscaling_group():
     pass
 
 @router.get("autoscaling-group/activity")
-async def get_autoscaling_grou_activity():
-    pass
+async def get_autoscaling_group_activity():
+    ag = debug_aws.get_autoscaling_group(id)
+    activity = debug_aws.get_scaling_activities(ag)
+    return activity
 
 @router.get("cloud-watch/logs")
 async def get_cloud_watch_logs(): 
     pass
 
+
+# A sample function that simulates fetching options from a database or external service.
+def fetch_options():
+    # These options would typically come from a database or some external service.
+    return ["Option 1", "Option 2", "Option 3"]
+
+@router.get("/compute_envs/list", response_class=HTMLResponse)
+async def get_options():
+    # Fetch options for the dropdown.
+    options = fetch_options()
+    # Convert the options to HTML list items.
+    options_html = "".join(f"<li>{option}</li>" for option in options)
+    # Return the options as an HTML string.
+    return options_html
 
