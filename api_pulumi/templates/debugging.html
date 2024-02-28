@@ -1,8 +1,8 @@
 <div class="flex w-full">
-    <form action="/aws/job-queue" hx-post>
+    <!-- <form action="/aws/job-queue" hx-post>
     <input type="text" placeholder="AWS Batch compute enviorment id" class="input input-bordered w-full max-w-xs" id="environment-id" />
     <button type="submit" class="btn btn-primary" id="compute-env-selection">Submit</button>
-    </form>
+    </form> -->
     <div class="divider divider-horizontal"></div>
     <div class="stats shadow">
         <div class="stat">
@@ -25,19 +25,40 @@
             <div class="stat-value" id="compute-env-status" hx-get="/aws/ecs" hx-trigger="every 50s, load" >Unkown</div>
         </div>
     </div>
+    <div class="dropdown dropdown-hover " style="position:absolute; right:0;">
+        <div tabindex="0" role="button" class="btn m-1">Compute enviornments</div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+            hx-get="/aws/compute_envs/list" hx-swap="outer" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
+        </ul>
+    </div>
 
 </div>
+<div class="divider divider-vertical"></div>
+<div class="overflow-x-auto">
+    <table class="table">
+
+      <tbody>
+        <!-- row 2 -->
+        <tr class="hover">
+          <th>2</th>
+          <td>Hart Hagerty</td>
+          <td>Desktop Support Technician</td>
+          <td>Purple</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 <div class="divider divider-vertical"></div>
 
 <div role="tablist" class="tabs tabs-lifted">
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 1</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/running" id="running-jobs", hx-trigger="load">Tab content 1</div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 2</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/succeeded" hx-trigger="load">Tab content 2</div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6"hx-get="/aws/job-queue/runnable" hx-trigger="load">Tab content 3</div>
   </div>
 
 </div>
