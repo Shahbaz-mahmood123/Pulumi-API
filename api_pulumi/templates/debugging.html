@@ -7,31 +7,29 @@
     <div class="stats shadow">
         <div class="stat">
             <div class="stat-title">Job Queue</div>
-            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-trigger="every 50s, load">Unkown</div>
+            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-include="#current-choice" hx-trigger="every 50s, load,click from:#dropdown-menu">Unkown</div>
         </div>
-
     </div>
     <div class="divider divider-horizontal"></div>
     <div class="stats shadow">
         <div class="stat">
             <div class="stat-title" >Compute Enviornment</div>
-            <div class="stat-value" id="compute-env-status" hx-get="/aws/compute-env" hx-trigger="every 50s, load">Unkown</div>
+            <div class="stat-value" id="compute-env-status" hx-get="/aws/compute-env" hx-trigger="every 50s, load, click from:#dropdown-menu">Unkown</div>
         </div>
     </div>
     <div class="divider divider-horizontal"></div>
     <div class="stats shadow">
         <div class="stat">
             <div class="stat-title">ECS Cluster</div>
-            <div class="stat-value" id="compute-env-status" hx-get="/aws/ecs" hx-trigger="every 50s, load" >Unkown</div>
+            <div class="stat-value" id="compute-env-status" hx-get="/aws/ecs" hx-trigger="every 50s, load, click from:#dropdown-menu" >Unkown</div>
         </div>
     </div>
     <div class="dropdown dropdown-hover " style="position:absolute; right:0;">
-        <div tabindex="0" role="button" class="btn m-1">Compute enviornments</div>
+        <div tabindex="0" role="button" class="btn m-1" id="current-choice">Compute enviornments</div>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             hx-get="/aws/compute_envs/list" hx-swap="outer" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
         </ul>
     </div>
-
 </div>
 <div class="divider divider-vertical"></div>
 <div class="overflow-x-auto">
@@ -41,9 +39,9 @@
         <!-- row 2 -->
         <tr class="hover">
           <th>2</th>
-          <td>Hart Hagerty</td>
-          <td>Desktop Support Technician</td>
-          <td>Purple</td>
+          <td>Running job</td>
+          <td>Status </td>
+          <td>Error</td>
         </tr>
       </tbody>
     </table>
@@ -52,13 +50,27 @@
 
 <div role="tablist" class="tabs tabs-lifted">
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/running" id="running-jobs", hx-trigger="load">Tab content 1</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/running" id="running-jobs,click from:#dropdown-menu", hx-trigger="load">Tab content 1</div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/succeeded" hx-trigger="load">Tab content 2</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/succeeded" hx-trigger="load, click from:#dropdown-menu">Tab content 2</div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 3" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6"hx-get="/aws/job-queue/runnable" hx-trigger="load">Tab content 3</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6"hx-get="/aws/job-queue/runnable" hx-trigger="load, click from:#dropdown-menu">Tab content 3</div>
   </div>
 
+  
 </div>
+
+
+<button class="btn btn-m" hx-get="/debug/compute-env" >Submit</button>
+
+<script>
+    const dropdown = document.querySelector('#dropdown-menu');
+dropdown.addEventListener('click', (event) => {
+    const selectedOption = event.target.innerText;
+    const currentChoice = document.querySelector('#current-choice');
+    currentChoice.innerText = selectedOption;
+    
+});
+</script>

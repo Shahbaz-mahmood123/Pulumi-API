@@ -1,0 +1,12 @@
+<form>
+    <label class="input input-bordered flex items-center gap-2">
+    <input type="text" class="grow" placeholder="Platform URL" name="platform_url" />
+  </label>
+  <label class="input input-bordered flex items-center gap-2">
+    <input type="number" class="grow" placeholder=" Workspace ID" name="workspace_id"/>
+  </label>
+  <label class="input input-bordered flex items-center gap-2">
+    <input type="password"  placeholder="Token" name="token"/>
+  </label>
+  <button class="btn btn-m" hx-post="/settings/create" hx-ext="json-enc">Submit</button>
+</form>
