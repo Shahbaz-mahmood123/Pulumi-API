@@ -1,17 +1,35 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from sqlmodel import Field, Session, SQLModel, create_engine
 
-Base = declarative_base()
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+# # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+
+# engine = create_engine(
+#     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+# )
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base = declarative_base()
+
+
+class Database():
+    
+    def __init__(self) -> None:
+        self.engine = create_engine("sqlite:///database.db")
+
+        SQLModel.metadata.create_all(self.engine)
+    
+    def newRecord(self, record):
+        with Session(self.engine) as session:
+            session.add(record)
+            session.commit()
+            
+        

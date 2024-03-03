@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 from core.debug_aws_batch import DebugAWSBatch
 
 from ..db import compute_env
-from ..db.database import engine, SessionLocal
+from .settings import Settings
 
 router = APIRouter(prefix="/aws")
 
@@ -18,9 +18,15 @@ debug_aws = DebugAWSBatch()
 
 id ="ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work" 
 
-
+class AWS():
+    def __init__(self) -> None:
+        self.debug_aws = DebugAWSBatch()
+        self.workspace_id = None
+        self.platform_url = None 
+        
+        
 @router.get("/job-queue",  response_class=PlainTextResponse)
-async def get_job_queue_status() -> str:
+async def get_job_queue_status(id: str) -> str:
     job_queue = debug_aws.get_job_queue_status(id)
     if not job_queue:
         return HTTPException(status_code=400, detail="Unable to fetch job queue validate your credentials or region")
@@ -84,18 +90,17 @@ async def get_autoscaling_group_activity():
 async def get_cloud_watch_logs(): 
     pass
 
-
 # A sample function that simulates fetching options from a database or external service.
-def fetch_options():
+def fetch_compute_enviornments():
     # These options would typically come from a database or some external service.
-    return ["Option 1", "Option 2", "Option 3"]
+    return ["ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work", "Option 2", "Option 3"]
 
 @router.get("/compute_envs/list", response_class=HTMLResponse)
 async def get_options():
     # Fetch options for the dropdown.
-    options = fetch_options()
+    options = fetch_compute_enviornments()
     # Convert the options to HTML list items.
-    options_html = "".join(f"<li>{option}</li>" for option in options)
+    options_html = "".join(f"<li><a>{option}<a></li>" for option in options)
     # Return the options as an HTML string.
     return options_html
 
