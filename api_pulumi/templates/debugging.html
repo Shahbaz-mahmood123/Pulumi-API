@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="dropdown dropdown-hover " style="position:absolute; right:0;">
-        <div tabindex="0" role="button" class="btn m-1" id="current-choice">Compute enviornments</div>
+        <div tabindex="0" role="button" class="btn m-1" >Compute enviornments</div>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             hx-get="/aws/compute_envs/list" hx-swap="outer" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
         </ul>
@@ -35,14 +35,8 @@
 <div class="overflow-x-auto">
     <table class="table">
 
-      <tbody>
-        <!-- row 2 -->
-        <tr class="hover">
-          <th>2</th>
-          <td>Running job</td>
-          <td>Status </td>
-          <td>Error</td>
-        </tr>
+      <tbody hx-get="aws/jobs_table" hx-trigger="load">
+
       </tbody>
     </table>
   </div>

@@ -22,8 +22,7 @@ class AWS():
     def __init__(self) -> None:
         self.debug_aws = DebugAWSBatch()
         self.workspace_id = None
-        self.platform_url = None 
-        
+        self.platform_url = None     
         
 @router.get("/job-queue",  response_class=PlainTextResponse)
 async def get_job_queue_status(id: str) -> str:
@@ -51,7 +50,6 @@ async def get_ecs_cluster_status() :
     else:
         return f"Error: {ecs_cluster}"
     
-
 @router.get("/job-queue/running")
 async def get_running_jobs():
     running_jobs = debug_aws.get_running_jobs(id)
@@ -78,7 +76,8 @@ async def get_succeeded_jobs():
 
 @router.get("/autoscaling-group")
 async def get_autoscaling_group():
-    pass
+    asg = debug_aws.get_autoscaling_group()
+    return asg
 
 @router.get("autoscaling-group/activity")
 async def get_autoscaling_group_activity():
@@ -88,10 +87,14 @@ async def get_autoscaling_group_activity():
 
 @router.get("cloud-watch/logs")
 async def get_cloud_watch_logs(): 
-    pass
+    asg = debug_aws.get_autoscaling_group()
+    logs = debug_aws.get_recent_forge_cloudwatch_logs(asg)
+    return logs
 
 # A sample function that simulates fetching options from a database or external service.
 def fetch_compute_enviornments():
+    
+    #ce = debug_aws.get_tower_compute_envs_id_list()
     # These options would typically come from a database or some external service.
     return ["ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work", "Option 2", "Option 3"]
 
@@ -104,3 +107,18 @@ async def get_options():
     # Return the options as an HTML string.
     return options_html
 
+@router.get("/jobs_table", response_class=HTMLResponse)
+async def get_jobs_table():
+    suceeded = debug_aws.get_succeeded_jobs(id)
+    jobs_html = ""
+    for job in suceeded:
+        jobs_html += f"""
+            <!-- row 2 -->
+            <tr class="hover">
+            <th>2</th>
+            <td>{job}</td>
+            <td>Status </td>
+            <td>Error</td>
+            </tr>
+        """
+    return jobs_html
