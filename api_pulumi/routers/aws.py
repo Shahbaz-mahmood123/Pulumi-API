@@ -76,7 +76,7 @@ async def get_succeeded_jobs():
 
 @router.get("/autoscaling-group")
 async def get_autoscaling_group():
-    asg = debug_aws.get_autoscaling_group()
+    asg = debug_aws.get_autoscaling_group(id)
     return asg
 
 @router.get("autoscaling-group/activity")
@@ -109,16 +109,21 @@ async def get_options():
 
 @router.get("/jobs_table", response_class=HTMLResponse)
 async def get_jobs_table():
+    
     suceeded = debug_aws.get_succeeded_jobs(id)
     jobs_html = ""
-    for job in suceeded:
+    count = 0
+    job_name = "Nextflow job name"
+    status = "FAILED"
+    exit_reason = "container issue"
+    for count in range(0, 5):
         jobs_html += f"""
-            <!-- row 2 -->
             <tr class="hover">
-            <th>2</th>
-            <td>{job}</td>
-            <td>Status </td>
-            <td>Error</td>
+            <th>{count}</th>
+            <td>{job_name}</td>
+            <td>{status} </td>
+            <td>{exit_reason}</td>
             </tr>
         """
+        count+=count
     return jobs_html
