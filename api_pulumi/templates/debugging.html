@@ -24,8 +24,9 @@
             <div class="stat-value" id="compute-env-status" hx-get="/aws/ecs" hx-trigger="every 50s, load, click from:#dropdown-menu" >Unkown</div>
         </div>
     </div>
-    <div class="dropdown dropdown-hover " style="position:absolute; right:0;">
-        <div tabindex="0" role="button" class="btn m-1" id="current-choice">Compute enviornments</div>
+    <div class="divider divider-horizontal"></div>
+    <div class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn m-1" >Compute enviornments</div>
         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             hx-get="/aws/compute_envs/list" hx-swap="outer" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
         </ul>
@@ -35,22 +36,36 @@
 <div class="overflow-x-auto">
     <table class="table">
 
-      <tbody>
-        <!-- row 2 -->
-        <tr class="hover">
-          <th>2</th>
-          <td>Running job</td>
-          <td>Status </td>
-          <td>Error</td>
-        </tr>
+      <tbody hx-get="aws/jobs_table" hx-trigger="load">
+
       </tbody>
     </table>
   </div>
 <div class="divider divider-vertical"></div>
 
+<div class="collapse bg-base-200 shadow">
+    <input type="checkbox" class="peer" /> 
+    <div class="collapse-title text-xl font-medium bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
+      Autoscaling group
+    </div>
+    <div class="collapse-content" hx-get="/aws/autoscaling-group" hx-trigger="load, click from:#dropdown-menu"> 
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  <div class="collapse bg-base-200 shadow">
+    <input type="checkbox" class="peer" /> 
+    <div class="collapse-title text-xl font-medium bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
+      Autoscaling group Activity
+    </div>
+    <div class="collapse-content"  hx-trigger="load, click from:#dropdown-menu"> 
+    </div>
+  </div>
+
+  <div class="divider divider-vertical"></div>
+
 <div role="tablist" class="tabs tabs-lifted">
-    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 1" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/running" id="running-jobs,click from:#dropdown-menu", hx-trigger="load">Tab content 1</div>
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Autoscaling grop Acitvity" />
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6"  id="running-jobs", hx-trigger="load, click from:#dropdown-menu">Tab content 1</div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked />
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6" hx-get="/aws/job-queue/succeeded" hx-trigger="load, click from:#dropdown-menu">Tab content 2</div>
