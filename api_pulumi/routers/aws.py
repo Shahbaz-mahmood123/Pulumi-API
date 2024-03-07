@@ -16,7 +16,7 @@ router = APIRouter(prefix="/aws")
 
 debug_aws = DebugAWSBatch()
 
-id ="ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work" 
+id ="TowerForge-2xn96eW9VM9mR1eJyEeLVb-work" 
 
 class AWS():
     def __init__(self) -> None:
@@ -111,12 +111,19 @@ async def get_options():
 async def get_jobs_table():
     
     suceeded = debug_aws.get_succeeded_jobs(id)
+    failed_jobs = debug_aws.get_failed_jobs(id)
+    runnable_jobs = debug_aws.get_runnable_jobs(id)
+    print
     jobs_html = ""
     count = 0
-    job_name = "Nextflow job name"
-    status = "FAILED"
+    
     exit_reason = "container issue"
-    for count in range(0, 5):
+    print(suceeded)
+    succeded_jobs_dict = suceeded.get("jobSummaryList", [])
+    for job in succeded_jobs_dict:
+        status = job.get("status")
+        job_name = job.get("jobName")
+        exit_reason = job.get("statusReason")
         jobs_html += f"""
             <tr class="hover">
             <th>{count}</th>
@@ -126,4 +133,19 @@ async def get_jobs_table():
             </tr>
         """
         count+=count
+        
+    if type(runnable_jobs) != str :
+        runnable_jobs_dict = runnable_jobs.get("jobSummaryList", [])
+        for job in runnable_jobs_dict:
+            status = job.get("status")
+            job_name = job.get("jobName")
+            exit_reason = job.get("statusReason")
+            jobs_html += f"""
+                <tr class="hover">
+                <th>{count}</th>
+                <td>{job_name}</td>
+                <td>{status} </td>
+                <td>{exit_reason}</td>
+                </tr>
+            """
     return jobs_html
