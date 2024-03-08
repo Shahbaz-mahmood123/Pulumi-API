@@ -6,6 +6,7 @@ tower.env
 tower.yml
 gcp-key.json
 random-files/
+api_pulumi/__pycache__/app.cpython-311.pyc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
