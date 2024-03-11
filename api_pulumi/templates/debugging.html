@@ -43,15 +43,16 @@
   </div>
 <div class="divider divider-vertical"></div>
 
-<div class="collapse bg-base-200 shadow">
+<div class="collapse bg-base-200 shadow"  hx-get="/aws/autoscaling-group" hx-swap="beforeend" hx-trigger="load, click from:#dropdown-menu" >
     <input type="checkbox" class="peer" /> 
     <div class="collapse-title text-xl font-medium bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-      Autoscaling group
-    </div>
-    <div class="collapse-content" hx-get="/aws/autoscaling-group" hx-trigger="load, click from:#dropdown-menu"> 
-    </div>
+        Autoscaling group
+      </div>
+    
   </div>
+
   <div class="divider divider-vertical"></div>
+  
   <div class="collapse bg-base-200 shadow">
     <input type="checkbox" class="peer" /> 
     <div class="collapse-title text-xl font-medium bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">

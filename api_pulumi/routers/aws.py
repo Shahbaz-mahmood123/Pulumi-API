@@ -16,7 +16,7 @@ router = APIRouter(prefix="/aws")
 
 debug_aws = DebugAWSBatch()
 
-id ="TowerForge-2xn96eW9VM9mR1eJyEeLVb-work" 
+id ="ShahbazCompute-5jB4AbxLx2imTOtG1QcySO-head" 
 
 class AWS():
     def __init__(self) -> None:
@@ -74,10 +74,19 @@ async def get_succeeded_jobs():
     jobs = debug_aws.get_succeeded_jobs(id)
     return jobs
 
-@router.get("/autoscaling-group")
+@router.get("/autoscaling-group", response_class=HTMLResponse)
 async def get_autoscaling_group():
     asg = debug_aws.get_autoscaling_group(id)
-    return asg
+    
+    asg_name = asg.get("AutoScalingGroupName")
+    html = f"""
+
+    <div> 
+    {asg_name}
+    </div>
+    """
+    
+    return html
 
 @router.get("autoscaling-group/activity")
 async def get_autoscaling_group_activity():
@@ -110,29 +119,29 @@ async def get_options():
 @router.get("/jobs_table", response_class=HTMLResponse)
 async def get_jobs_table():
     
-    suceeded = debug_aws.get_succeeded_jobs(id)
+    suceeded_jobs = debug_aws.get_succeeded_jobs(id)
     failed_jobs = debug_aws.get_failed_jobs(id)
     runnable_jobs = debug_aws.get_runnable_jobs(id)
-    print
     jobs_html = ""
     count = 0
     
     exit_reason = "container issue"
-    print(suceeded)
-    succeded_jobs_dict = suceeded.get("jobSummaryList", [])
-    for job in succeded_jobs_dict:
-        status = job.get("status")
-        job_name = job.get("jobName")
-        exit_reason = job.get("statusReason")
-        jobs_html += f"""
-            <tr class="hover">
-            <th>{count}</th>
-            <td>{job_name}</td>
-            <td>{status} </td>
-            <td>{exit_reason}</td>
-            </tr>
-        """
-        count+=count
+   
+    if type(suceeded_jobs) != str:
+        succeded_jobs_dict = suceeded_jobs.get("jobSummaryList", [])
+        for job in succeded_jobs_dict:
+            status = job.get("status")
+            job_name = job.get("jobName")
+            exit_reason = job.get("statusReason")
+            jobs_html += f"""
+                <tr class="hover">
+                <th>{count}</th>
+                <td>{job_name}</td>
+                <td>{status} </td>
+                <td>{exit_reason}</td>
+                </tr>
+            """
+            count+=count
         
     if type(runnable_jobs) != str :
         runnable_jobs_dict = runnable_jobs.get("jobSummaryList", [])
@@ -148,4 +157,21 @@ async def get_jobs_table():
                 <td>{exit_reason}</td>
                 </tr>
             """
-    return jobs_html
+            
+    if type(failed_jobs) != str :
+        failed_jobs_dict = failed_jobs.get("jobSummaryList", [])
+        for job in failed_jobs_dict:
+            status = job.get("status")
+            job_name = job.get("jobName")
+            exit_reason = job.get("statusReason")
+            jobs_html += f"""
+                <tr class="hover">
+                <th>{count}</th>
+                <td>{job_name}</td>
+                <td>{status} </td>
+                <td>{exit_reason}</td>
+                </tr>
+            """
+
+    return jobs_html 
+

@@ -5,6 +5,7 @@ import json
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import APIRouter
+from fastapi.responses import HTMLResponse
 
 from ..internal.gcp_pulumi import SelectGCP
 
@@ -13,14 +14,21 @@ select_gcp_type = SelectGCP()
 router = APIRouter(prefix="/gcp")
 
 def format_preview_output():
-    pass 
+    pass
 
-@router.get("/compute/minimal/preview")
+@router.get("/compute/minimal/preview", response_class=HTMLResponse)
 def preview():
-    output = select_gcp_type.preview_compute_engine_instance()
+    preview = select_gcp_type.preview_compute_engine_instance()
 
-    return {"preview": output}
-
+    output = preview.stdout
+    multiline_output = ""
+    
+    for line in output.splitlines():
+        
+       multiline_output += f"""<p>{line}</p>"""
+    
+    return "<div>" + multiline_output + "</div"
+ 
 @router.get("/compute/minimal/up")
 def up():
     up = select_gcp_type.up_compute_engine_instance()
@@ -42,3 +50,4 @@ def refresh():
     if refresh is None:
         return 0
     return refresh
+
