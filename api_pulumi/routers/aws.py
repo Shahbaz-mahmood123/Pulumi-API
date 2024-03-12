@@ -74,17 +74,37 @@ async def get_succeeded_jobs():
     jobs = debug_aws.get_succeeded_jobs(id)
     return jobs
 
+def create_info_card(label, value):
+    return f"""
+    <Card>
+        <CardHeader>{label}</CardHeader>
+        <CardBody>{value}</CardBody>
+    </Card>
+    """
+    
 @router.get("/autoscaling-group", response_class=HTMLResponse)
 async def get_autoscaling_group():
     asg = debug_aws.get_autoscaling_group(id)
-    
+    print(asg)
     asg_name = asg.get("AutoScalingGroupName")
-    html = f"""
+    html =f"""
+        <div class="prose">
+            <h2>Auto Scaling Group Details</h2>
+            <Grid gap={2} justify="center">
+                {create_info_card("Auto Scaling Group Name", asg.get("AutoScalingGroupName"))}
+                {create_info_card("ARN", "https://docs.aws.amazon.com/autoscaling/")}  {create_info_card("Region", asg.get("Region"))}
+                {create_info_card("Min Size", str(asg.get("MinSize")))}
+                {create_info_card("Max Size", str(asg.get("MaxSize")))}
+                {create_info_card("Desired Capacity", str(asg.get("DesiredCapacity")))}
+                {create_info_card("Instance Types", ", ".join([x["InstanceType"] for x in asg.get("MixedInstancesPolicy", {}).get("LaunchTemplate", {}).get("Overrides", [])]))}
+                {create_info_card("VPC Subnets", asg.get("VPCZoneIdentifier"))}
+                {create_info_card("Created Time", asg.get("CreatedTime").strftime("%Y-%m-%d %H:%M:%S"))}
+            </Grid>
 
-    <div> 
-    {asg_name}
-    </div>
-    """
+            <br/>
+            <Button target="_blank" href="https://docs.aws.amazon.com/autoscaling/">Learn more about Auto Scaling Groups</Button> </div>
+        """
+    
     
     return html
 
@@ -173,5 +193,14 @@ async def get_jobs_table():
                 </tr>
             """
 
+    if jobs_html == "":
+        jobs_html += f"""
+                <tr class="hover">
+                <th>0</th>
+                <td>No jobs found</td>
+                <td>COMPLETED</td>
+                <td>Unknown</td>
+                </tr>
+            """
     return jobs_html 
 
