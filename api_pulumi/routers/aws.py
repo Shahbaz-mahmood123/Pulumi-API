@@ -50,6 +50,14 @@ async def get_ecs_cluster_status() :
     else:
         return f"Error: {ecs_cluster}"
     
+@router.get("/ecs-cluster",  response_class=HTMLResponse)
+async def get_ecs_cluster_status() :
+    ecs_cluster = debug_aws.get_ecs_cluster(id)
+    print(ecs_cluster)
+
+    return f"<div> {ecs_cluster} </div>"
+    
+    
 @router.get("/job-queue/running")
 async def get_running_jobs():
     running_jobs = debug_aws.get_running_jobs(id)
@@ -114,12 +122,19 @@ async def get_autoscaling_group_activity():
     activity = debug_aws.get_scaling_activities(ag)
     return activity
 
-@router.get("cloud-watch/logs")
+@router.get("cloud-watch/logs", response_class=HTMLResponse)
 async def get_cloud_watch_logs(): 
     asg = debug_aws.get_autoscaling_group()
     logs = debug_aws.get_recent_forge_cloudwatch_logs(asg)
-    return logs
+    return f"<div> {logs} </div>"
 
+@router.get("/launch-template", response_class=HTMLResponse)
+async def get_launch_template():
+    launch_template_id = debug_aws.get_aws_batch_compute_env_launch_template_id(id)
+    launch_template_object = debug_aws.get_user_data_from_launch_template(launch_template_id)            
+    launch_template_userdata = debug_aws.extract_and_decode_user_data(launch_template_object)
+    
+    return f"<div> {launch_template_userdata} </div>"
 # A sample function that simulates fetching options from a database or external service.
 def fetch_compute_enviornments():
     
