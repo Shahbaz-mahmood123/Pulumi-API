@@ -16,14 +16,8 @@ from .settings import Settingsdto
 router = APIRouter(prefix="/aws")
 
 debug_aws = DebugAWSBatch()
-settings = Settingsdto()
-setting = settings.get_settings()
 
-seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
-                                  platform_token=setting.token,
-                                  platform_url=setting.platform_url)
-
-id ="ShahbazCompute--work" 
+id ="ShahbazCompute-60DYsGNvv7ePgububNBqE7-work" 
 
 class AWS():
     def __init__(self) -> None:
@@ -140,16 +134,23 @@ async def get_launch_template():
     return f"<div> {launch_template_userdata} </div>"
 # A sample function that simulates fetching options from a database or external service.
 def fetch_compute_enviornments():
-
-    ce_list = seqera.list_compute_envs("AVAILABLE")
-    print(ce_list)
+    # settings = Settingsdto()
+    # setting = settings.get_settings()
+    # print(setting.workspace_id, setting.platform_url, setting.token)
+    # seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
+    #                                 platform_token=setting.token,
+    #                                 platform_url=setting.platform_url)
+    # # Fetch options for the dropdown.
+    # ce_list = seqera.list_compute_envs(status="AVAILABLE")
+    # response = ce_list.get("ListComputeEnvsResponseEntry", [])
+    # print(response)
     #ce = debug_aws.get_tower_compute_envs_id_list()
     # These options would typically come from a database or some external service.
-    return ce_list
+    return  ["ShahbazCompute-60DYsGNvv7ePgububNBqE7-work", "ShahbazCompute-60DYsGNvv7ePgububNBqE7-head"]
 
 @router.get("/compute_envs/list", response_class=HTMLResponse)
 async def get_options():
-    # Fetch options for the dropdown.
+
     options = fetch_compute_enviornments()
     # Convert the options to HTML list items.
     options_html = "".join(f"<li><a>{option}<a></li>" for option in options)

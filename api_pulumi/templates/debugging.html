@@ -7,7 +7,7 @@
     <div class="stats shadow">
         <div class="stat">
             <div class="stat-title">Job Queue</div>
-            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-include="#current-choice" hx-trigger="every 50s, load,click from:#dropdown-menu">Unkown</div>
+            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-params="#dropdown-menu" hx-trigger="every 50s, load,click from:#dropdown-menu">Unkown</div>
         </div>
     </div>
     <div class="divider divider-horizontal"></div>

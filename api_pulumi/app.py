@@ -16,8 +16,6 @@ from .routers import aws, gcp, compute_env, settings
 
 app = FastAPI()
 
-
-
 #add additional routes here
 app.include_router(gcp.router)
 app.include_router(compute_env.router)
@@ -29,9 +27,6 @@ templates = Jinja2Templates(directory="api_pulumi/templates")
 app.mount("/static", StaticFiles(directory="api_pulumi/static"), name="static")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
