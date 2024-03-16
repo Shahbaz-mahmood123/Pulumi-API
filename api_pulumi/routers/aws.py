@@ -8,15 +8,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse
 from core.debug_aws_batch import DebugAWSBatch
+from core.compute_envs import SeqeraComputeEnvsWrapper
 
 from ..db import compute_env
-from .settings import Settings
+from .settings import Settingsdto
 
 router = APIRouter(prefix="/aws")
 
 debug_aws = DebugAWSBatch()
 
-id ="ShahbazCompute-5jB4AbxLx2imTOtG1QcySO-head" 
+id ="ShahbazCompute-60DYsGNvv7ePgububNBqE7-work" 
 
 class AWS():
     def __init__(self) -> None:
@@ -41,7 +42,6 @@ async def get_compute_enviornment_status() -> str:
 @router.get("/ecs",  response_class=PlainTextResponse)
 async def get_ecs_cluster_status() :
     ecs_cluster = debug_aws.get_ecs_cluster(id)
-    print(ecs_cluster)
     if ecs_cluster:
         cluster = ecs_cluster.get("clusters", "")
         print(cluster)
@@ -53,7 +53,6 @@ async def get_ecs_cluster_status() :
 @router.get("/ecs-cluster",  response_class=HTMLResponse)
 async def get_ecs_cluster_status() :
     ecs_cluster = debug_aws.get_ecs_cluster(id)
-    print(ecs_cluster)
 
     return f"<div> {ecs_cluster} </div>"
     
@@ -61,7 +60,6 @@ async def get_ecs_cluster_status() :
 @router.get("/job-queue/running")
 async def get_running_jobs():
     running_jobs = debug_aws.get_running_jobs(id)
-    print(running_jobs)
     return running_jobs
 
 @router.get("/job-queue/submitted")
@@ -93,7 +91,6 @@ def create_info_card(label, value):
 @router.get("/autoscaling-group", response_class=HTMLResponse)
 async def get_autoscaling_group():
     asg = debug_aws.get_autoscaling_group(id)
-    print(asg)
     asg_name = asg.get("AutoScalingGroupName")
     html =f"""
         <div class="prose">
@@ -116,15 +113,15 @@ async def get_autoscaling_group():
     
     return html
 
-@router.get("autoscaling-group/activity")
+@router.get("/autoscaling-group/activity")
 async def get_autoscaling_group_activity():
     ag = debug_aws.get_autoscaling_group(id)
     activity = debug_aws.get_scaling_activities(ag)
     return activity
 
-@router.get("cloud-watch/logs", response_class=HTMLResponse)
+@router.get("/cloudwatch/logs", response_class=HTMLResponse)
 async def get_cloud_watch_logs(): 
-    asg = debug_aws.get_autoscaling_group()
+    asg = debug_aws.get_autoscaling_group(id)
     logs = debug_aws.get_recent_forge_cloudwatch_logs(asg)
     return f"<div> {logs} </div>"
 
@@ -137,14 +134,23 @@ async def get_launch_template():
     return f"<div> {launch_template_userdata} </div>"
 # A sample function that simulates fetching options from a database or external service.
 def fetch_compute_enviornments():
-    
+    # settings = Settingsdto()
+    # setting = settings.get_settings()
+    # print(setting.workspace_id, setting.platform_url, setting.token)
+    # seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
+    #                                 platform_token=setting.token,
+    #                                 platform_url=setting.platform_url)
+    # # Fetch options for the dropdown.
+    # ce_list = seqera.list_compute_envs(status="AVAILABLE")
+    # response = ce_list.get("ListComputeEnvsResponseEntry", [])
+    # print(response)
     #ce = debug_aws.get_tower_compute_envs_id_list()
     # These options would typically come from a database or some external service.
-    return ["ShahbazCompute-5tQSF2ahyA19GNS5b8rzNS-work", "Option 2", "Option 3"]
+    return  ["ShahbazCompute-60DYsGNvv7ePgububNBqE7-work", "ShahbazCompute-60DYsGNvv7ePgububNBqE7-head"]
 
 @router.get("/compute_envs/list", response_class=HTMLResponse)
 async def get_options():
-    # Fetch options for the dropdown.
+
     options = fetch_compute_enviornments()
     # Convert the options to HTML list items.
     options_html = "".join(f"<li><a>{option}<a></li>" for option in options)
@@ -158,7 +164,7 @@ async def get_jobs_table():
     failed_jobs = debug_aws.get_failed_jobs(id)
     runnable_jobs = debug_aws.get_runnable_jobs(id)
     jobs_html = ""
-    count = 0
+    count = 1
     
     exit_reason = "container issue"
    
@@ -176,7 +182,7 @@ async def get_jobs_table():
                 <td>{exit_reason}</td>
                 </tr>
             """
-            count+=count
+            count+=1
         
     if type(runnable_jobs) != str :
         runnable_jobs_dict = runnable_jobs.get("jobSummaryList", [])
@@ -192,6 +198,7 @@ async def get_jobs_table():
                 <td>{exit_reason}</td>
                 </tr>
             """
+            count+=1
             
     if type(failed_jobs) != str :
         failed_jobs_dict = failed_jobs.get("jobSummaryList", [])
@@ -207,6 +214,7 @@ async def get_jobs_table():
                 <td>{exit_reason}</td>
                 </tr>
             """
+            count+=1
 
     if jobs_html == "":
         jobs_html += f"""
@@ -217,5 +225,6 @@ async def get_jobs_table():
                 <td>Unknown</td>
                 </tr>
             """
+
     return jobs_html 
 

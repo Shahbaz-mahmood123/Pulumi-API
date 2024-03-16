@@ -21,13 +21,13 @@ def preview():
     preview = select_gcp_type.preview_compute_engine_instance()
 
     output = preview.stdout
+    preview.stderr
     multiline_output = ""
-    
     for line in output.splitlines():
         
        multiline_output += f"""<p>{line}</p>"""
     
-    return "<div>" + multiline_output + "</div"
+    return "<div>" + multiline_output + "</div>"
  
 @router.get("/compute/minimal/up")
 def up():
