@@ -134,28 +134,34 @@ async def get_launch_template():
     return f"<div> {launch_template_userdata} </div>"
 # A sample function that simulates fetching options from a database or external service.
 def fetch_compute_enviornments():
-    # settings = Settingsdto()
-    # setting = settings.get_settings()
-    # print(setting.workspace_id, setting.platform_url, setting.token)
-    # seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
-    #                                 platform_token=setting.token,
-    #                                 platform_url=setting.platform_url)
+    settings = Settingsdto()
+    setting = settings.get_settings()
+    print(setting.workspace_id, setting.platform_url, setting.token)
+    seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
+                                    platform_token=setting.token,
+                                    platform_url=setting.platform_url)
     # # Fetch options for the dropdown.
-    # ce_list = seqera.list_compute_envs(status="AVAILABLE")
-    # response = ce_list.get("ListComputeEnvsResponseEntry", [])
-    # print(response)
-    #ce = debug_aws.get_tower_compute_envs_id_list()
-    # These options would typically come from a database or some external service.
-    return  ["ShahbazCompute-60DYsGNvv7ePgububNBqE7-work", "ShahbazCompute-60DYsGNvv7ePgububNBqE7-head"]
+    ce_list = seqera.list_compute_envs(status="AVAILABLE")
+    ids = [env.id for env in ce_list.compute_envs if env.platform == "aws-batch"]
+    print(ids)
+    return  ids
 
 @router.get("/compute_envs/list", response_class=HTMLResponse)
 async def get_options():
 
     options = fetch_compute_enviornments()
-    # Convert the options to HTML list items.
-    options_html = "".join(f"<li><a>{option}<a></li>" for option in options)
+    options_html = ""
+    for option in options:
+        options_html += f"""
+        <li><ahx-post="/aws/compute_envs/select">{option}<a></li>
+        """
     # Return the options as an HTML string.
     return options_html
+
+@router.post("/compute_envs/select", response_class=PlainTextResponse)
+async def select_current_ce(compute_env_id: str):
+    
+    return compute_env_id
 
 @router.get("/jobs_table", response_class=HTMLResponse)
 async def get_jobs_table():
