@@ -44,7 +44,6 @@ async def get_ecs_cluster_status() :
     ecs_cluster = debug_aws.get_ecs_cluster(id)
     if ecs_cluster:
         cluster = ecs_cluster.get("clusters", "")
-        print(cluster)
         cluster_state = cluster[0].get("status", "")
         return cluster_state
     else:
@@ -52,9 +51,28 @@ async def get_ecs_cluster_status() :
     
 @router.get("/ecs-cluster",  response_class=HTMLResponse)
 async def get_ecs_cluster_status() :
-    ecs_cluster = debug_aws.get_ecs_cluster(id)
-
-    return f"<div> {ecs_cluster} </div>"
+    ecs = debug_aws.get_ecs_cluster(id)
+    print(ecs)
+    ecs_cluster = ecs.get("clusters", [])
+    if ecs_cluster:  # Check if the list is not empty
+        html = ""
+        for cluster in ecs_cluster:
+            print(cluster)
+            html += f"""
+            <div class="flex w-full">
+                {create_info_card("Cluster Name", cluster.get('clusterName', 'N/A'))}
+                {create_info_card("ARN", cluster.get('clusterArn', 'N/A'))}  
+            </div>
+            <div class="divider divider-horizontal"></div>
+            <div class="flex w-full">
+                {create_info_card("Running Tasks", cluster.get('runningTasksCount', 'N/A'))}
+                {create_info_card("Pending Tasks", cluster.get('pendingTasksCount', 'N/A'))}  
+                {create_info_card("Active Services", cluster.get('activeServicesCount', 'N/A'))}  
+            </div>
+            """
+        return html
+    else:
+        return "No ECS clusters found."
     
     
 @router.get("/job-queue/running")
@@ -82,10 +100,12 @@ async def get_succeeded_jobs():
 
 def create_info_card(label, value):
     return f"""
-    <Card>
-        <CardHeader>{label}</CardHeader>
-        <CardBody>{value}</CardBody>
-    </Card>
+    <div class="card w-96 bg-base-100 shadow-xl">
+        <div class="card-body">
+        <h2 class="card-title">{label}</h2>
+        <p>{value}</p>
+    </div>
+    </div>
     """
     
 @router.get("/autoscaling-group", response_class=HTMLResponse)
@@ -93,23 +113,28 @@ async def get_autoscaling_group():
     asg = debug_aws.get_autoscaling_group(id)
     asg_name = asg.get("AutoScalingGroupName")
     html =f"""
-        <div class="prose">
-            <h2>Auto Scaling Group Details</h2>
-            <Grid gap={2} justify="center">
-                {create_info_card("Auto Scaling Group Name", asg.get("AutoScalingGroupName"))}
-                {create_info_card("ARN", "https://docs.aws.amazon.com/autoscaling/")}  {create_info_card("Region", asg.get("Region"))}
-                {create_info_card("Min Size", str(asg.get("MinSize")))}
-                {create_info_card("Max Size", str(asg.get("MaxSize")))}
-                {create_info_card("Desired Capacity", str(asg.get("DesiredCapacity")))}
-                {create_info_card("Instance Types", ", ".join([x["InstanceType"] for x in asg.get("MixedInstancesPolicy", {}).get("LaunchTemplate", {}).get("Overrides", [])]))}
-                {create_info_card("VPC Subnets", asg.get("VPCZoneIdentifier"))}
-                {create_info_card("Created Time", asg.get("CreatedTime").strftime("%Y-%m-%d %H:%M:%S"))}
-            </Grid>
-
-            <br/>
-            <Button target="_blank" href="https://docs.aws.amazon.com/autoscaling/">Learn more about Auto Scaling Groups</Button> </div>
-        """
     
+    <div class="flex w-full">
+        {create_info_card("Auto Scaling Group Name", asg.get("AutoScalingGroupName"))}
+        {create_info_card("ARN", asg.get("AutoScalingGroupARN"))}  {create_info_card("Region", asg.get("Region"))}
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="flex w-full">
+        {create_info_card("Min Size", str(asg.get("MinSize")))}
+        {create_info_card("Max Size", str(asg.get("MaxSize")))}
+        {create_info_card("Desired Capacity", str(asg.get("DesiredCapacity")))}
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="flex w-full">
+        {create_info_card("VPC Subnets", asg.get("VPCZoneIdentifier"))}
+        {create_info_card("Created Time", asg.get("CreatedTime").strftime("%Y-%m-%d %H:%M:%S"))}
+    </div>
+    <div class="divider divider-horizontal"></div>
+    <div class="flex w-full">
+        {create_info_card("Instance Types", ", ".join([x["InstanceType"] for x in asg.get("MixedInstancesPolicy", {}).get("LaunchTemplate", {}).get("Overrides", [])]))}
+    </div>
+       
+        """
     
     return html
 
@@ -132,7 +157,7 @@ async def get_launch_template():
     launch_template_userdata = debug_aws.extract_and_decode_user_data(launch_template_object)
     
     return f"<div> {launch_template_userdata} </div>"
-# A sample function that simulates fetching options from a database or external service.
+
 def fetch_compute_enviornments():
     settings = Settingsdto()
     setting = settings.get_settings()
@@ -140,11 +165,15 @@ def fetch_compute_enviornments():
     seqera = SeqeraComputeEnvsWrapper(workspace_id=setting.workspace_id, 
                                     platform_token=setting.token,
                                     platform_url=setting.platform_url)
-    # # Fetch options for the dropdown.
+
     ce_list = seqera.list_compute_envs(status="AVAILABLE")
     ids = [env.id for env in ce_list.compute_envs if env.platform == "aws-batch"]
-    print(ids)
-    return  ids
+    new_ce_list = []
+    for id in ids:
+        new_ce_list.append(f'TowerForge-{id}-head')
+        new_ce_list.append(f'TowerForge-{id}-work')
+
+    return new_ce_list
 
 @router.get("/compute_envs/list", response_class=HTMLResponse)
 async def get_options():
@@ -153,7 +182,7 @@ async def get_options():
     options_html = ""
     for option in options:
         options_html += f"""
-        <li><ahx-post="/aws/compute_envs/select">{option}<a></li>
+        <li><a hx-post="/aws/compute_envs/select?compute_env_id={option}" id="{option}" hx-target="#current-env">{option}</a></li>
         """
     # Return the options as an HTML string.
     return options_html

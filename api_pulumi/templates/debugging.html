@@ -7,7 +7,7 @@
     <div class="stats shadow">
         <div class="stat">
             <div class="stat-title">Job Queue</div>
-            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-params="#dropdown-menu" hx-trigger="every 50s, load,click from:#dropdown-menu">Unkown</div>
+            <div class="stat-value" id="job-queue-status" hx-get="/aws/job-queue" hx-params="*" hx-params="current-env"  hx-include="next #current-env" hx-trigger="every 50s, load,click from:#dropdown-menu">Unkown</div>
         </div>
     </div>
     <div class="divider divider-horizontal"></div>
@@ -26,9 +26,9 @@
     </div>
     <div class="divider divider-horizontal"></div>
     <div class="dropdown dropdown-hover">
-        <div tabindex="0" role="button" class="btn m-1" >Compute enviornments</div>
-        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-            hx-get="/aws/compute_envs/list" hx-swap="outer" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
+        <div tabindex="0" role="button" class="btn m-1" id="current-env" >Compute enviornments</div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-65"
+            hx-get="/aws/compute_envs/list" hx-swap="inner" hx-target="#dropdown-menu" hx-trigger="shown,load" id="dropdown-menu">
         </ul>
     </div>
 </div>
@@ -44,8 +44,8 @@
 
 
 <div class="tabs tabs-boxed mx-auto ">
-    <input type="radio" name="my_tabs_2" id="tab1" hx-get="/aws/autoscaling-group" role="tab" class="tab" aria-label="Autoscaling group" hx-trigger="click" hx-target="#tab-content" hx-swap="innerHTML after .active" />
-    <input type="radio" name="my_tabs_2" id="tab2" hx-get="/aws/ecs-cluster" role="tab" class="tab active" aria-label="ECS Cluster" checked hx-trigger="click" hx-target="#tab-content" hx-swap="innerHTML after .active" />
+    <input type="radio" name="my_tabs_2" id="tab1" hx-get="/aws/autoscaling-group" role="tab" class="tab active" checked aria-label="Autoscaling group" hx-trigger="click,load" hx-target="#tab-content" hx-swap="innerHTML after .active" />
+    <input type="radio" name="my_tabs_2" id="tab2" hx-get="/aws/ecs-cluster" role="tab" class="tab" aria-label="ECS Cluster"  hx-trigger="click" hx-target="#tab-content" hx-swap="innerHTML after .active" />
     <input type="radio" name="my_tabs_2" id="tab3" hx-get="/aws/cloudwatch/logs" role="tab" class="tab" aria-label="Cloudwatch" hx-trigger="click" hx-target="#tab-content" hx-swap="innerHTML after .active" />
     <input type="radio" name="my_tabs_2" id="tab4" hx-get="/aws/launch-template" role="tab" class="tab" aria-label="Launch template" hx-trigger="click" hx-target="#tab-content" hx-swap="innerHTML after .active" />
   </div>
@@ -65,12 +65,3 @@
 
 <!-- <button class="btn btn-m" hx-get="/debug/compute-env" >Submit</button> -->
 
-<script>
-    const dropdown = document.querySelector('#dropdown-menu');
-dropdown.addEventListener('click', (event) => {
-    const selectedOption = event.target.innerText;
-    const currentChoice = document.querySelector('#current-choice');
-    currentChoice.innerText = selectedOption;
-    
-});
-</script>
