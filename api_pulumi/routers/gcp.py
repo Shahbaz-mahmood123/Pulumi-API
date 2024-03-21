@@ -21,7 +21,7 @@ def preview():
     preview = select_gcp_type.preview_compute_engine_instance()
 
     output = preview.stdout
-    preview.stderr
+    stderr = preview.stderr
     multiline_output = ""
     for line in output.splitlines():
         
@@ -29,25 +29,52 @@ def preview():
     
     return "<div>" + multiline_output + "</div>"
  
-@router.get("/compute/minimal/up")
+@router.get("/compute/minimal/up", response_class=HTMLResponse)
 def up():
     up = select_gcp_type.up_compute_engine_instance()
-    return {"up": up}
+    print(up.stdout)
+    stdout = up.stdout
+    multiline_output = ""
+    for line in stdout.splitlines():
+        
+       multiline_output += f"""<p>{line}</p>"""
+    
+    return "<div>" + multiline_output + "</div>"
 
-@router.get("/compute/minimal/destroy")
+@router.get("/compute/minimal/destroy", response_class=HTMLResponse)
 def destroy():
     destroy = select_gcp_type.destroy_compute_engine_instance()
-    return {"destroy": destroy}
+    print(destroy)
+    output = destroy.stdout
+    stderr = destroy.stderr
+    multiline_output = ""
+    for line in output.splitlines():
+        
+       multiline_output += f"""<p>{line}</p>"""
+    
+    return "<div>" + multiline_output + "</div>"
 
-@router.get("/compute/minimal/destroy_stack")
+@router.get("/compute/minimal/destroy_stack", response_class=HTMLResponse)
 def destroy_stack():
     destroy_stack = select_gcp_type.destroy_stack_compute_engine_instance()
-    return {"destroy_stack": destroy_stack}
+    output = destroy_stack.stdout
+    stderr = destroy_stack.stderr
+    multiline_output = ""
+    for line in output.splitlines():
+        
+       multiline_output += f"""<p>{line}</p>"""
+    
+    return "<div>" + multiline_output + "</div>"
 
 @router.get("/compute/minimal/refresh")
 def refresh():
     refresh = select_gcp_type.refresh_stack_compute_engine_instance()
-    if refresh is None:
-        return 0
+    output = refresh.stdout
+    stderr = refresh.stderr
+    multiline_output = ""
+    for line in output.splitlines():
+        
+       multiline_output += f"""<p>{line}</p>"""
+    
     return refresh
 
