@@ -12,6 +12,7 @@ from core.compute_envs import SeqeraComputeEnvsWrapper
 
 from ..db import compute_env
 from .settings import Settingsdto
+from ..internal.compute_envs import ComputeEnvs
 
 router = APIRouter(prefix="/aws")
 
@@ -133,9 +134,7 @@ async def get_autoscaling_group():
     <div class="flex w-full">
         {create_info_card("Instance Types", ", ".join([x["InstanceType"] for x in asg.get("MixedInstancesPolicy", {}).get("LaunchTemplate", {}).get("Overrides", [])]))}
     </div>
-       
         """
-    
     return html
 
 @router.get("/autoscaling-group/activity")
@@ -182,15 +181,23 @@ async def get_options():
     options_html = ""
     for option in options:
         options_html += f"""
-        <li><a hx-post="/aws/compute_envs/select?compute_env_id={option}" id="{option}" hx-target="#current-env">{option}</a></li>
+        <li><a hx-post="/aws/compute_envs/set?compute_env_id={option}" id="{option}" hx-target="#current-env">{option}</a></li>
         """
     # Return the options as an HTML string.
     return options_html
 
-@router.post("/compute_envs/select", response_class=PlainTextResponse)
-async def select_current_ce(compute_env_id: str):
+@router.post("/compute_envs/set", response_class=PlainTextResponse)
+async def set_current_ce(compute_env_id: str):
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
     
-    return compute_env_id
+    if ce_list != None:
+        updated_ce = db.update_current_ce(ce_list.name, compute_env_id)
+        print(updated_ce)
+        return updated_ce.name
+    else:
+        new_ce = db.create_ce(compute_env_id)
+        return new_ce.name 
 
 @router.get("/jobs_table", response_class=HTMLResponse)
 async def get_jobs_table():
@@ -262,4 +269,6 @@ async def get_jobs_table():
             """
 
     return jobs_html 
+
+
 
