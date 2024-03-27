@@ -27,8 +27,11 @@ class AWS():
         self.platform_url = None     
         
 @router.get("/job-queue",  response_class=PlainTextResponse)
-async def get_job_queue_status(id: str) -> str:
-    job_queue = debug_aws.get_job_queue_status(id)
+async def get_job_queue_status() -> str:
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    print(ce_list.name)
+    job_queue = debug_aws.get_job_queue_status(ce_list.name)
     if not job_queue:
         return HTTPException(status_code=400, detail="Unable to fetch job queue validate your credentials or region")
     status = job_queue.get("jobQueueState", "")
@@ -36,13 +39,18 @@ async def get_job_queue_status(id: str) -> str:
 
 @router.get("/compute-env", response_class=PlainTextResponse)
 async def get_compute_enviornment_status() -> str:
-    compute_env = debug_aws.get_compute_env_status(id)
+    
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    compute_env = debug_aws.get_compute_env_status(ce_list.name)
     status = compute_env.get("computeEnviornmentState", "")
     return status
     
 @router.get("/ecs",  response_class=PlainTextResponse)
 async def get_ecs_cluster_status() :
-    ecs_cluster = debug_aws.get_ecs_cluster(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    ecs_cluster = debug_aws.get_ecs_cluster(ce_list.name)
     if ecs_cluster:
         cluster = ecs_cluster.get("clusters", "")
         cluster_state = cluster[0].get("status", "")
@@ -52,7 +60,9 @@ async def get_ecs_cluster_status() :
     
 @router.get("/ecs-cluster",  response_class=HTMLResponse)
 async def get_ecs_cluster_status() :
-    ecs = debug_aws.get_ecs_cluster(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    ecs = debug_aws.get_ecs_cluster(ce_list.name)
     print(ecs)
     ecs_cluster = ecs.get("clusters", [])
     if ecs_cluster:  # Check if the list is not empty
@@ -78,7 +88,9 @@ async def get_ecs_cluster_status() :
     
 @router.get("/job-queue/running")
 async def get_running_jobs():
-    running_jobs = debug_aws.get_running_jobs(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    running_jobs = debug_aws.get_running_jobs(ce_list.name)
     return running_jobs
 
 @router.get("/job-queue/submitted")
@@ -111,8 +123,15 @@ def create_info_card(label, value):
     
 @router.get("/autoscaling-group", response_class=HTMLResponse)
 async def get_autoscaling_group():
-    asg = debug_aws.get_autoscaling_group(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    asg = debug_aws.get_autoscaling_group(ce_list.name)
+    
+    if asg == None:
+        return  f"No match found for the autoscaling group, {ce_list.name}. Ensure you have run at least one compute so the resource is generated"
+    
     asg_name = asg.get("AutoScalingGroupName")
+    
     html =f"""
     
     <div class="flex w-full">
@@ -139,7 +158,9 @@ async def get_autoscaling_group():
 
 @router.get("/autoscaling-group/activity")
 async def get_autoscaling_group_activity():
-    ag = debug_aws.get_autoscaling_group(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    ag = debug_aws.get_autoscaling_group(ce_list.name)
     activity = debug_aws.get_scaling_activities(ag)
     return activity
 
@@ -169,8 +190,8 @@ def fetch_compute_enviornments():
     ids = [env.id for env in ce_list.compute_envs if env.platform == "aws-batch"]
     new_ce_list = []
     for id in ids:
-        new_ce_list.append(f'TowerForge-{id}-head')
-        new_ce_list.append(f'TowerForge-{id}-work')
+        new_ce_list.append(f'ShahbazCompute-{id}-head')
+        new_ce_list.append(f'ShahbazCompute-{id}-work')
 
     return new_ce_list
 
@@ -201,10 +222,11 @@ async def set_current_ce(compute_env_id: str):
 
 @router.get("/jobs_table", response_class=HTMLResponse)
 async def get_jobs_table():
-    
-    suceeded_jobs = debug_aws.get_succeeded_jobs(id)
-    failed_jobs = debug_aws.get_failed_jobs(id)
-    runnable_jobs = debug_aws.get_runnable_jobs(id)
+    db = ComputeEnvs()
+    ce_list = db.get_current_compute_env()
+    suceeded_jobs = debug_aws.get_succeeded_jobs(ce_list.name)
+    failed_jobs = debug_aws.get_failed_jobs(ce_list.name)
+    runnable_jobs = debug_aws.get_runnable_jobs(ce_list.name)
     jobs_html = ""
     count = 1
     
