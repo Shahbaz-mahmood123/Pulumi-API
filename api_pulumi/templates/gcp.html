@@ -5,7 +5,7 @@
         <button class="btn btn-primary btn-sm w-64" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/preview" hx-target="#message-container">Infrastructure preview</button>
         <button class="btn btn-primary btn-sm w-64 " onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/up" hx-target="#message-container">Infrastructure up</button>
         <button class="btn btn-primary btn-sm w-64" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/destroy" hx-target="#message-container">Infrastructure destroy</button>
-        <button class="btn btn-primary btn-sm w-64" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/destroy_stack" hx-target="#message-container">Infrastructure destroy_stack</button>
+        <button class="btn btn-primary btn-sm w-64" onclick="my_modal.showModal()" hx-get="/gcp/compute/minimal/refresh" hx-target="#message-container">Infrastructure refresh</button>
     </div> 
     
     <div class="divider lg:divider-horizontal"></div> 
@@ -25,7 +25,7 @@
   
         <div class="stat">
           <div class="stat-title">Errors</div>
-          <div class="stat-value"> 0</div>
+          <div class="stat-value" id="error-container"> 0</div>
           <div class="stat-actions">    
           </div>
         </div>
@@ -35,7 +35,7 @@
   
         <div class="stat">
           <div class="stat-title">Ouputs</div>
-          <div class="stat-value">0</div>
+          <div class="stat-value" id="output-container">0</div>
           <div class="stat-actions">    
           </div>
         </div>
@@ -46,8 +46,6 @@
   <div class="grid flex-grow h-80 card bg-base-300 overflow-auto rounded-box place-items-center">
         
     <div class="shadow"id="message-container" hx:target.afterUpdate="my_modal.close()">
-
-
     </div>
     <dialog id="my_modal" class="modal">
         <div class="modal-box">
@@ -64,6 +62,37 @@
         }, 50); // Adjust timeout as needed
       }
     });
+    function updateStats(output) {
+      let resourcesCount = 0;
+      let errorsCount = 0;
+      let outputsCount = 0;
+
+      // Parse the output to count resources, errors, and outputs
+      const lines = output.split('\n');
+      lines.forEach(line => {
+          if (line.startsWith('+') || line.startsWith('@')) {
+              resourcesCount++;
+          } else if (line.startsWith('warning:') || line.startsWith('Diagnostics:')) {
+              errorsCount++;
+          } else if (line.startsWith('Outputs:')) {
+              outputsCount++;
+          }
+      });
+
+      // Update the UI with the counts
+      document.getElementById('resource-create-container').textContent = resourcesCount;
+      document.getElementById('error-container').textContent = errorsCount;
+      document.getElementById('output-container').textContent = outputsCount;
+  }
+
+  document.addEventListener('htmx:afterSwap', (event) => {
+      if (event.detail.target.id === "message-container") {
+          // Extract the output from the message container
+          const output = event.detail.target.innerHTML;
+          // Update the stats based on the extracted output
+          updateStats(output);
+      }
+  });
 </script>
 
 

@@ -4,7 +4,7 @@ from typing import Any
 from infrastructure.pulumi import PulumiExecution
 from infrastructure.minimal_gcp_compute_engine import MinimalPulumiGCP
 from infrastructure.pulumi_config import MinimalPulumiGCPConfig, MinimalPulumiGCPConfigYAML
-from infrastructure.models.pulumi import PreviewResult
+from infrastructure.models.pulumi import PreviewResult, UpResult, DestroyResult, RefreshResult
 
 class SelectGCP():
     
@@ -31,17 +31,19 @@ class SelectGCP():
        preview = self.pulumi_execution.preview()
        return preview
     
-    def up_compute_engine_instance(self):
+    def up_compute_engine_instance(self) -> UpResult:
         up_result = self.pulumi_execution.execute()
+        return [up_result]
     
-    def destroy_compute_engine_instance(self):
+    def destroy_compute_engine_instance(self) -> DestroyResult:
+        response = self.pulumi_execution.destroy()
+        return response
     
-        self.pulumi_execution.destroy()
-    
-    def destroy_stack_compute_engine_instance(self):
+    def destroy_stack_compute_engine_instance(self) -> DestroyResult:
         self.pulumi_execution.destroy_stack()
     
-    def refresh_stack_compute_engine_instance(self):
-        self.pulumi_execution.refresh()
+    def refresh_stack_compute_engine_instance(self) -> RefreshResult:
+        response = self.pulumi_execution.refresh()
+        return response
 
 
